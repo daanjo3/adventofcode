@@ -1,4 +1,4 @@
-module github.com/daanjo3/adventofcode2022/day1
+module github.com/daanjo3/adventofcode2022/day4
 
 replace github.com/daanjo3/adventofcode2022/helper => ../helper
 

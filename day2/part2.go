@@ -1,35 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
+
+	"github.com/daanjo3/adventofcode2022/helper"
 )
-
-func readFile(filePath string) []string {
-	// Open the file
-	readFile, err := os.Open(filePath)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	// Set the scanner to split on lines stripping trailing whitespaces
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-	var fileLines []string
-
-	// Actually go through the file by calling Scan() until it is false
-	for fileScanner.Scan() {
-		fileLines = append(fileLines, fileScanner.Text())
-	}
-
-	// Close the file
-	readFile.Close()
-
-	return fileLines
-}
 
 type Gesture int64
 
@@ -99,7 +75,7 @@ func getGesturePoint(gesture Gesture) int {
 }
 
 func main() {
-	matches := readFile("input.txt")
+	matches := helper.ReadLines("input.txt")
 
 	total := 0
 	for _, match := range matches {

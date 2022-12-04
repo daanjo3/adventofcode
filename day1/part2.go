@@ -1,36 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
+
+	"github.com/daanjo3/adventofcode2022/helper"
 )
-
-func readFile(filePath string) []string {
-	// Open the file
-	readFile, err := os.Open(filePath)
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	// Set the scanner to split on lines stripping trailing whitespaces
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-	var fileLines []string
-
-	// Actually go through the file by calling Scan() until it is false
-	for fileScanner.Scan() {
-		fileLines = append(fileLines, fileScanner.Text())
-	}
-
-	// Close the file
-	readFile.Close()
-
-	return fileLines
-}
 
 func calculateElfCapacities(calories []string) []int {
 	elfCapacity := []int{0}
@@ -51,7 +27,7 @@ func calculateElfCapacities(calories []string) []int {
 }
 
 func main() {
-	calories := readFile("input.txt")
+	calories := helper.ReadLines("input.txt")
 	elfCapacity := calculateElfCapacities(calories)
 
 	// Reverse sort the list
