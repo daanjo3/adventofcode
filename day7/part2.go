@@ -83,14 +83,17 @@ func calculateDirSize(curDir *dir) int {
 	return sum
 }
 
-func sumTargetDirs(curDir *dir, sum int) int {
-	if curDir.size < 100000 {
-		sum += curDir.size
+func findBestDir(curDir *dir, target int, best int) int {
+	if curDir.size > target {
+		if best == 0 || curDir.size < best {
+			fmt.Println()
+			best = curDir.size
+		}
 	}
 	for _, subdir := range curDir.subdirs {
-		sum = sumTargetDirs(subdir, sum)
+		best = findBestDir(subdir, target, best)
 	}
-	return sum
+	return best
 }
 
 func main() {
@@ -113,6 +116,11 @@ func main() {
 	}
 	calculateDirSize(root)
 	printFs(root, 0)
-	sumDirs := sumTargetDirs(root, 0)
+
+	total := 70000000
+	update := 30000000
+	available := total - root.size
+	target := update - available
+	sumDirs := findBestDir(root, target, 0)
 	fmt.Println(sumDirs)
 }
