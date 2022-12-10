@@ -1,5 +1,7 @@
-module github.com/daanjo3/adventofcode2022/day8
+module github.com/daanjo3/adventofcode2022/day7
+
+replace github.com/daanjo3/adventofcode2022/helper => ../helper
 
 go 1.18
 
-require github.com/daanjo3/adventofcode2022/helper v0.0.0-20221207200330-52b19aed36c7
+require github.com/daanjo3/adventofcode2022/helper v0.0.0-00010101000000-000000000000

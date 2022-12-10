@@ -2,72 +2,135 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/daanjo3/adventofcode2022/helper"
 )
 
-func Init2DArray(yMax int, xMax int) [][]int {
-	grid := make([][]int, yMax)
-	for y := 0; y < yMax; y++ {
-		grid[y] = make([]int, xMax)
-	}
-	return grid
+type point struct {
+	x int
+	y int
 }
 
-func CreateGrid(inputfile string) [][]int {
-	lines := helper.ReadLines(inputfile)
-	grid := Init2DArray(len(lines), len(lines[0]))
-	for y, line := range lines {
-		for x, height := range line {
-			grid[y][x] = int(height - '0')
+func (p *point) hash() string {
+	return strconv.Itoa(p.x) + "x" + strconv.Itoa(p.y)
+}
+
+func move(start *point, direction string) point {
+	switch direction {
+	case "U":
+		return point{x: start.x, y: start.y + 1}
+	case "D":
+		return point{x: start.x, y: start.y - 1}
+	case "R":
+		return point{x: start.x + 1, y: start.y}
+	case "L":
+		return point{x: start.x - 1, y: start.y}
+	}
+	panic("Move reached end of method")
+}
+
+func getHorizontalStep(diff *point) string {
+	if diff.x > 0 {
+		return "R"
+	}
+	if diff.x < 0 {
+		return "L"
+	}
+	return ""
+}
+
+func getVerticalStep(diff *point) string {
+	if diff.y > 0 {
+		return "U"
+	}
+	if diff.y < 0 {
+		return "D"
+	}
+	return ""
+}
+
+func Abs(value int) int {
+	if value > 0 {
+		return value
+	}
+	return -value
+}
+
+func calculateDiff(head *point, tail *point) *point {
+	return &point{x: head.x - tail.x, y: head.y - tail.y}
+}
+
+func calculateTailStep(head *point, tail *point) []string {
+	diff := calculateDiff(head, tail)
+	if Abs(diff.x) == 2 {
+		if diff.y == 0 {
+			return []string{getHorizontalStep(diff)}
+		}
+		return []string{getHorizontalStep(diff), getVerticalStep(diff)}
+	}
+	if Abs(diff.y) == 2 {
+		if diff.x == 0 {
+			return []string{getVerticalStep(diff)}
+		}
+		return []string{getVerticalStep(diff), getHorizontalStep(diff)}
+	}
+	return []string{}
+}
+
+func initKnots() []*point {
+	knots := make([]*point, 0)
+	for i := 0; i < 10; i++ {
+		knots = append(knots, &point{x: 0, y: 0})
+	}
+	return knots
+}
+
+func Part2(filename string) {
+	fmt.Println("Running part2 with " + filename)
+	steps := helper.ReadLines(filename)
+
+	knots := initKnots()
+	head := &point{x: 0, y: 0}
+	tail := &point{x: 0, y: 0}
+	points := make(map[string]int)
+	fmt.Println("head", head.hash())
+	fmt.Println("tail", tail.hash())
+	points[tail.hash()] = 1
+	for _, step := range steps {
+		stepArr := strings.Split(step, " ")
+		direction := stepArr[0]
+		amount, err := strconv.Atoi(stepArr[1])
+		if err != nil {
+			panic(err)
+		}
+		for i := 0; i < amount; i++ {
+			fmt.Println("Stepping to " + direction)
+			newHeadPoint := move(head, direction)
+			head = &newHeadPoint
+			for i := range knots {
+				previous := head
+				if i > 0 {
+					previous = knots[i]
+				}
+				knotSteps := calculateTailStep(head, previous)
+				fmt.Println("Step causes tail steps", knotSteps)
+				for _, knotStep := range knotSteps {
+					newKnotPoint := move(previous, knotStep)
+					knots[i] = &newKnotPoint
+				}
+				points[knots[i].hash()] = 1
+			}
+			// fmt.Println("head", head.hash())
+			// fmt.Println("tail", tail.hash())
 		}
 	}
-	return grid
-}
 
-func calculateViewscore(grid [][]int) int {
-	diffMap := Init2DArray(len(grid), len(grid[0]))
-	best := 0
-	for y, row := range grid {
-		for x, _ := range row {
-			if x == 0 || x == len(row)-1 || y == 0 || y == len(grid)-1 {
-				diffMap[y][x] = 2
-				continue
-			}
-			score := viewScore(grid, y, x)
-			if score > best {
-				best = score
-			}
-		}
-	}
-	return best
-}
-
-func viewScore(grid [][]int, y int, x int) int {
-	topDiff := viewDirection(grid, y, x, -1, 0)
-	bottomDiff := viewDirection(grid, y, x, 1, 0)
-	leftDiff := viewDirection(grid, y, x, 0, -1)
-	rightDiff := viewDirection(grid, y, x, 0, 1)
-	return topDiff * bottomDiff * leftDiff * rightDiff
-}
-
-func viewDirection(grid [][]int, y int, x int, dy int, dx int) int {
 	count := 0
-	myHeight := grid[y][x]
-	for y < len(grid)-1 && y > 0 && x < len(grid[0])-1 && x > 0 {
-		y += dy
-		x += dx
+	for range points {
 		count++
-		if grid[y][x] >= myHeight {
-			break
-		}
 	}
-	return count
-}
-
-func main() {
-	grid := CreateGrid("input.txt")
-	fmt.Println(grid)
-	score := calculateViewscore(grid)
-	fmt.Println(score)
+	fmt.Println(points)
+	fmt.Println("Unique fields", count)
 }
