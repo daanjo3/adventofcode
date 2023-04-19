@@ -1,0 +1,8 @@
+{
+  "name": "aoc2022",
+  "version": "1.0.0",
+  "description": "Advent of code javscript solutions",
+  "main": "index.js",
+  "author": "Daan Meijers",
+  "license": "MIT"
+}
