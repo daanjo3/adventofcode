@@ -14,3 +14,17 @@ fn parse_regex(line: &str, color: &str) -> Vec<i32> {
 
     nums
 }
+
+/**
+ * Regex example from d4
+ */
+fn parse_numbers(line: &str) -> Vec<i32> {
+    let number_regex: Regex = Regex::new(r"(\b(?<numbers>\d{1,2})\b)").unwrap();
+    
+    let mut result = Vec::new();
+    for cap in number_regex.captures_iter(line) {
+        result.push(cap.name("numbers").unwrap().as_str().parse::<i32>().unwrap())
+    }
+
+    result
+}
