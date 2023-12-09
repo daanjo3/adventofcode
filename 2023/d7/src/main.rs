@@ -1,4 +1,4 @@
-use std::{collections::HashMap, cmp::Ordering, path::Display, fmt};
+use std::{collections::HashMap, cmp::Ordering, fmt};
 
 #[derive(PartialEq, Hash, Eq, Debug)]
 struct Card(char);
@@ -11,7 +11,7 @@ impl Card {
             'A' => 14,
             'K' => 13,
             'Q' => 12,
-            'J' => 11,
+            'J' => 1,
             'T' => 10,
             _ => panic!(),
         }
@@ -71,19 +71,45 @@ fn compare(hand_a: &Hand, hand_b: &Hand) -> Ordering {
     return hand_a.score.cmp(&hand_b.score);
 }
 
+fn make_count_map(cards: &Vec<Card>, exclude: Option<char>) -> HashMap<&Card, usize> {
+    cards.iter()
+        .filter(|c| {
+            if exclude.is_some() {
+                if c.0 == 'J' {
+                    return false;
+                }
+                return !exclude.is_some_and(|ex| ex == c.0);
+            }
+            return true
+        })
+        .fold(HashMap::new(), |mut m, test| {
+            let count = cards.iter().filter(|c| {
+                if !exclude.is_some() && c.0 == 'J' {
+                    return true;
+                }
+                c.0 == test.0
+            }).count();
+            m.insert(test, count);
+            return m
+        })
+}
+
 fn calculate_score(cards: &Vec<Card>) -> Score {
-    let count_map: HashMap<&Card, usize> = cards.iter().fold(HashMap::new(), |mut m, test| {
-        let count = cards.iter().filter(|c| c.0 == test.0).count();
-        m.insert(test, count);
-        return m
-    });
+    let count_map = make_count_map(cards, None);
     let max = count_map.values().max().unwrap();
     match max {
         5 => Score::FiveOak,
         4 => Score::FourOak,
         3 => {
-            if count_map.values().any(|c| *c == 2) {
-                return Score::FullHouse
+            let threes: Vec<&Card> = count_map.iter()
+                .filter(|(_, v)| **v == 3)
+                .map(|(k, _)| *k)
+                .collect();
+            for three in threes {
+                let count_map_2 = make_count_map(cards, Some(three.0));
+                if count_map_2.values().any(|c| *c == 2) {
+                    return Score::FullHouse
+                }
             }
             return Score::ThreeOak
         }
@@ -106,7 +132,7 @@ fn parse_hand(line: &str) -> Hand {
     return Hand { cards, score, rank: 0, bid };
 }
 
-fn part_one(filename: &str) {
+fn part_two(filename: &str) {
     let input = std::fs::read_to_string(filename).unwrap();
     let mut hands: Vec<Hand> = input.lines().map(|l| parse_hand(l)).collect();
 
@@ -119,6 +145,6 @@ fn part_one(filename: &str) {
 }
 
 fn main() {
-    // part_one("input/sample-input.txt");
-    part_one("input/puzzle-input.txt");
+    // part_two("input/sample-input.txt");
+    part_two("input/puzzle-input.txt");
 }
