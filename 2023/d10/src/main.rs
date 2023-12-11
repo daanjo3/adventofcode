@@ -1,4 +1,4 @@
-use std::{fs::read_to_string, collections::HashMap, slice::Iter};
+use std::{fs::read_to_string, collections::HashMap, slice::Iter, fmt::Display};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 struct Point {
@@ -11,6 +11,11 @@ impl Point {
             x,
             y
         }
+    }
+}
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("({},{})", self.x, self.y))
     }
 }
 
@@ -30,12 +35,19 @@ impl Cell {
             _ => panic!("Direction none should never be provided to this function.")
         }
     }
-    fn get_poss_neighbor<'a>(&'a self, map: &'a HashMap<Point, Cell>) -> Vec<&Cell> {
+    fn get_poss_neighbor<'a>(&'a self, map: &'a HashMap<Point, Cell>, filter_dir: bool) -> Vec<&Cell> {
         Direction::iter()
+            .filter(|d| {
+                if filter_dir {
+                    return self.opening.contains(d)
+                }
+                true
+            })
             .map(|d| (self.get_neighbor(map, d), d))
-            .filter(|(o, d)| o.is_some())
-            .filter(|(c, d)| c.unwrap().opening.contains(&d.opposite()))
-            .map(|(c, d)| c.unwrap())
+            .filter(|(o, _)| o.is_some())
+            .map(|(c, d)| (c.unwrap(), d))
+            .filter(|(c, d)| c.opening.contains(&d.opposite()) || c.is_start)
+            .map(|(c, _)| c)
             .collect()
     }
     // fn get_next_neighbor<'a>(&'a self, map: &'a HashMap<Point, Cell>, origin: Point) -> Option<&&Cell> {
@@ -70,7 +82,7 @@ impl Direction {
     }
 }
 
-fn parse_map(filename: &str) -> i32 {
+fn part_one(filename: &str) -> i32 {
     let input = read_to_string(filename).unwrap();
     let lines = input.lines();
     let mut map: HashMap<Point, Cell> = HashMap::new();
@@ -98,27 +110,33 @@ fn parse_map(filename: &str) -> i32 {
     let mut previous = None;
     let mut count: i32 = 0;
     loop {
-        let mut neighbors = current.get_poss_neighbor(&map);
+        println!("Current cell: {}", current.point);
+        let neighbors = current.get_poss_neighbor(&map, previous.is_some());
+        print!("Neighbors: ");
+        neighbors.iter().map(|n| n.point.clone()).for_each(|p| print!("{}, ", p));
+        print!("\n");
         match previous.as_ref() {
             None => {
                 previous = Some(&current.point);
                 current = neighbors.get(0).unwrap();
             }
             Some(&p) => {
+                previous = Some(&current.point);
                 current = neighbors.iter().find(|n| n.point != *p).unwrap()
             }
         }
+        count += 1;
         if start == current {
             break
         }
-        count += 1;
     }
 
-    println!("Path length = {}", count);
-    count
+    println!("Path length = {}, target = {}", count, count / 2);
+    count / 2
 
 }
 
 fn main() {
-    parse_map("input/sample-input.txt");
+    part_one("input/sample-input.txt");
+    part_one("input/puzzle-input.txt");
 }
