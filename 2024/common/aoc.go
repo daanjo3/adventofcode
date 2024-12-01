@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func AdventCommand(dayDir string, oneStarFunc func(string), twoStarFunc func(string)) {
+func AdventCommand(dayDirName string, oneStarFunc func(string), twoStarFunc func(string)) {
 	var inputfile string
 	var star int
 	var starFunc func(string)
@@ -31,13 +31,13 @@ func AdventCommand(dayDir string, oneStarFunc func(string), twoStarFunc func(str
 	}
 
 	if sample {
-		inputfile = fmt.Sprintf("%s/input-sample.txt", dayDir)
+		inputfile = fmt.Sprintf("%s/input-sample.txt", dayDirName)
 		inputMsgPart = "sample"
 	} else {
-		inputfile = fmt.Sprintf("%s/input.txt", dayDir)
+		inputfile = fmt.Sprintf("%s/input.txt", dayDirName)
 		inputMsgPart = "full"
 	}
 
-	fmt.Printf("Running %s: part=%s input=%s\n", dayDir, starMsgPart, inputMsgPart)
+	fmt.Printf("Running %s: part=%s input=%s\n", dayDirName, starMsgPart, inputMsgPart)
 	starFunc(inputfile)
 }
