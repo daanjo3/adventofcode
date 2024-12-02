@@ -10,14 +10,13 @@ func main() {
 	x.AdventCommand("day2", analyzeGraduality, analyzeGradualityLenient)
 }
 
-func isGradualTransition(report []int, tokens int) bool {
-	goingUp := true
-	if report[0] == report[1] {
-		return false
+func isGradualTransition(report []int, tokens int) (bool, int) {
+	if (report[0] == report[1]) || (report[0]-report[1] > 3) || (report[0]-report[1] < -3) {
+		tokens = 0
+		report = report[1:]
 	}
-	if report[0] > report[1] {
-		goingUp = false
-	}
+	goingUp := report[0] < report[1]
+
 	var levelPrev int
 	for i, level := range report {
 		if i == 0 {
@@ -35,23 +34,67 @@ func isGradualTransition(report []int, tokens int) bool {
 		if diff < 1 || diff > 3 {
 			if tokens > 0 {
 				tokens--
+				if i == 1 {
+					levelPrev = level
+				}
+				if i == (len(report) - 1) {
+					return true, 0
+				}
 				continue
 			} else {
-				return false
+				return false, diff
 			}
 		}
 		levelPrev = level
 	}
-	return true
+	return true, 0
+}
+
+func calculateDiffs(report []int) []int {
+	diffs := []int{}
+	prev := report[0]
+	for _, level := range report[1:] {
+		diffs = append(diffs, prev-level)
+		prev = level
+	}
+	return diffs
+}
+
+func isGradualTransitionV2(report []int, goDeeper bool) bool {
+	diffs := calculateDiffs(report)
+	numErr := 0
+	for _, diff := range diffs {
+		if diff < -3 || diff > 3 || diff == 0 {
+			numErr++
+		}
+	}
+	if numErr == 0 {
+		return true
+	}
+	if numErr > 1 {
+		return false
+	}
+	if !goDeeper {
+		return false
+	}
+	for i := range report {
+		reportClone := make([]int, len(report))
+		copy(reportClone, report)
+		newReport := x.Remove(reportClone, i)
+		if isGradualTransitionV2(newReport, false) {
+			return true
+		}
+	}
+	return false
 }
 
 func analyzeGradualityLenient(inputfile string) {
-	// Not yet working
 	numSafeReports := 0
 
 	x.ReadLines(inputfile, func(line string) {
 		report := x.ParseIntArray(line)
-		isSafe := isGradualTransition(report, 1)
+		isSafe := isGradualTransitionV2(report, true)
+		fmt.Printf("Report %s is safe: %t\n", line, isSafe)
 		if isSafe {
 			numSafeReports++
 		}
@@ -65,7 +108,7 @@ func analyzeGraduality(inputfile string) {
 
 	x.ReadLines(inputfile, func(line string) {
 		report := x.ParseIntArray(line)
-		isSafe := isGradualTransition(report, 0)
+		isSafe, _ := isGradualTransition(report, 0)
 		if isSafe {
 			numSafeReports++
 		}
