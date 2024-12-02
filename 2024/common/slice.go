@@ -27,3 +27,11 @@ func ParseIntArray(line string) []int {
 func Remove(slice []int, s int) []int {
 	return append(slice[:s], slice[s+1:]...)
 }
+
+func Sum(numbers []int) int {
+	result := 0
+	for i := 0; i < len(numbers); i++ {
+		result += numbers[i]
+	}
+	return result
+}
