@@ -41,3 +41,7 @@ func AdventCommand(dayDirName string, oneStarFunc func(string), twoStarFunc func
 	fmt.Printf("Running %s: part=%s input=%s\n", dayDirName, starMsgPart, inputMsgPart)
 	starFunc(inputfile)
 }
+
+func PlaceholderFunc(inputfile string) {
+	fmt.Println("To be implemented...")
+}
