@@ -15,6 +15,16 @@ func CountInt(arr []int, target int) int {
 	return count
 }
 
+func CountString(arr []string, target string) int {
+	count := 0
+	for _, v := range arr {
+		if v == target {
+			count++
+		}
+	}
+	return count
+}
+
 func ParseIntArray(line string) []int {
 	var intArr = []int{}
 	digits := strings.Fields(line)
