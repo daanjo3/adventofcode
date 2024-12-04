@@ -12,8 +12,7 @@ func main() {
 	x.AdventCommand("day3", parseUncorrupted, parseUncorruptedDoing)
 }
 
-func findDisableRange(dos [][]int, donts [][]int) (int, int) {
-	// TODO
+func findEnabledRange(dos [][]int, donts [][]int) (int, int) {
 	return 0, 0
 }
 
