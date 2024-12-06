@@ -31,7 +31,7 @@ func calculateSimilarity(inputfile string) {
 	left, right := readInput(inputfile)
 
 	for _, target := range left {
-		similarity += (target * x.CountInt(right, target))
+		similarity += (target * x.ArrCountInt(right, target))
 	}
 
 	fmt.Printf("The similarity in location IDs lists is %v!\n", similarity)

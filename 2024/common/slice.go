@@ -1,11 +1,12 @@
 package common
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
 
-func CountInt(arr []int, target int) int {
+func ArrCountInt(arr []int, target int) int {
 	count := 0
 	for _, v := range arr {
 		if v == target {
@@ -15,7 +16,7 @@ func CountInt(arr []int, target int) int {
 	return count
 }
 
-func CountString(arr []string, target string) int {
+func ArrCountString(arr []string, target string) int {
 	count := 0
 	for _, v := range arr {
 		if v == target {
@@ -23,6 +24,18 @@ func CountString(arr []string, target string) int {
 		}
 	}
 	return count
+}
+
+func ArrRemoveInt(slice []int, s int) []int {
+	return append(slice[:s], slice[s+1:]...)
+}
+
+func ArrSum(numbers []int) int {
+	result := 0
+	for i := 0; i < len(numbers); i++ {
+		result += numbers[i]
+	}
+	return result
 }
 
 func ParseIntArray(line string) []int {
@@ -34,14 +47,22 @@ func ParseIntArray(line string) []int {
 	return intArr
 }
 
-func Remove(slice []int, s int) []int {
-	return append(slice[:s], slice[s+1:]...)
+func MatrixFindRune(matrix [][]rune, target rune) (Point, error) {
+	for y, row := range matrix {
+		for x, tile := range row {
+			if tile == target {
+				return Point{X: x, Y: y}, nil
+			}
+		}
+	}
+	return Point{}, errors.New("target not found in matrix")
 }
 
-func Sum(numbers []int) int {
-	result := 0
-	for i := 0; i < len(numbers); i++ {
-		result += numbers[i]
+func MatrixRuneClone(matrix [][]rune) [][]rune {
+	duplicate := make([][]rune, len(matrix))
+	for i := range matrix {
+		duplicate[i] = make([]rune, len(matrix[i]))
+		copy(duplicate[i], matrix[i])
 	}
-	return result
+	return duplicate
 }

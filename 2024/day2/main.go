@@ -46,7 +46,7 @@ func isGradualTransitionV2(report []int) bool {
 	for i := range report {
 		reportClone := make([]int, len(report))
 		copy(reportClone, report)
-		newReport := x.Remove(reportClone, i)
+		newReport := x.ArrRemoveInt(reportClone, i)
 		if isGradualTransition(newReport) {
 			return true
 		}

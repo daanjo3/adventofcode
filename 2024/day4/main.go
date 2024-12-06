@@ -92,8 +92,8 @@ func checkXmasV2(matrix [][]string, x int, y int) bool {
 		matrix[y-1][x-1],
 	}
 
-	numM := common.CountString(corners, "M")
-	numS := common.CountString(corners, "S")
+	numM := common.ArrCountString(corners, "M")
+	numS := common.ArrCountString(corners, "S")
 	if numS != 2 || numM != 2 {
 		return false
 	}
