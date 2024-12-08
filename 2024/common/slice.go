@@ -58,6 +58,18 @@ func MatrixFindRune(matrix [][]rune, target rune) (Point, error) {
 	return Point{}, errors.New("target not found in matrix")
 }
 
+func MatrixFindRunes(matrix [][]rune, target rune) []Point {
+	found := []Point{}
+	for y, row := range matrix {
+		for x, tile := range row {
+			if tile == target {
+				found = append(found, Point{X: x, Y: y})
+			}
+		}
+	}
+	return found
+}
+
 func MatrixRuneClone(matrix [][]rune) [][]rune {
 	duplicate := make([][]rune, len(matrix))
 	for i := range matrix {
@@ -65,4 +77,12 @@ func MatrixRuneClone(matrix [][]rune) [][]rune {
 		copy(duplicate[i], matrix[i])
 	}
 	return duplicate
+}
+
+func ReadRuneMatrix(inputfile string) [][]rune {
+	matrix := [][]rune{}
+	ReadLines(inputfile, func(s string) {
+		matrix = append(matrix, []rune(s))
+	})
+	return matrix
 }

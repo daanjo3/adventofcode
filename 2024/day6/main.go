@@ -10,14 +10,6 @@ func main() {
 	c.AdventCommand("day6", analyzeGuardPath, loopGuardPath)
 }
 
-func buildMap(inputfile string) [][]rune {
-	matrix := [][]rune{}
-	c.ReadLines(inputfile, func(s string) {
-		matrix = append(matrix, []rune(s))
-	})
-	return matrix
-}
-
 func findGuardStartingPos(matrix [][]rune) c.Point {
 	pos, err := c.MatrixFindRune(matrix, '^')
 	if err != nil {
@@ -54,7 +46,7 @@ func nextHeading(heading c.Point) c.Point {
 }
 
 func analyzeGuardPath(inputfile string) {
-	matrix := buildMap(inputfile)
+	matrix := c.ReadRuneMatrix(inputfile)
 	guardPos := findGuardStartingPos(matrix)
 	heading := c.Point{X: 0, Y: -1}
 	visited := make(map[c.Point]bool)
@@ -77,7 +69,7 @@ func analyzeGuardPath(inputfile string) {
 }
 
 func loopGuardPath(inputfile string) {
-	originalMatrix := buildMap(inputfile)
+	originalMatrix := c.ReadRuneMatrix(inputfile)
 	walkedOut := false
 
 	obstructed := make(map[c.Point]bool)
