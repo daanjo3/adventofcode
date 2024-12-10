@@ -14,7 +14,7 @@ func main() {
 	)
 }
 
-func parseFs(config string) []int {
+func parseFs(config string) ([]int, int) {
 	fs := []int{}
 	isFile := true
 	fileNum := 0
@@ -59,7 +59,22 @@ func nextFreeIndex(fs []int) int {
 	panic("Didn't find free blocks")
 }
 
-func popLastFileBlock(fs []int) int {
+func nextFreeBlockIndex(fs []int, blockSize int) int {
+	for i, v := range fs {
+		freeSize := 0
+		if v == -1 {
+			for end := i; fs[end] == -1; end++ {
+				freeSize++
+				if freeSize == blockSize {
+					return i
+				}
+			}
+		}
+	}
+	return -1
+}
+
+func popLastFile(fs []int) int {
 	for i := len(fs) - 1; i >= 0; i-- {
 		v := fs[i]
 		if v != -1 {
@@ -68,6 +83,20 @@ func popLastFileBlock(fs []int) int {
 		}
 	}
 	panic("Didn't find file blocks")
+}
+
+func getFileBlock(fs []int, blockNum int) (int, int) {
+	start, stop := -1
+	for i, v := range fs {
+		if start == -1 && v == blockNum {
+			start = i
+		}
+		if start != -1 && v != blockNum {
+			stop = i - 1
+			return start, stop
+		}
+	}
+	panic("Didn't find file block: " + strconv.Itoa(blockNum))
 }
 
 func calculateChecksum(fs []int) int {
@@ -83,13 +112,33 @@ func calculateChecksum(fs []int) int {
 
 func compressFileSystem(inputfile string) {
 	line := c.ReadLine(inputfile)
-	fs := parseFs(line)
+	fs, _ := parseFs(line)
 	// fmt.Printf("config filesystem: %v\n", line)
 	// fmt.Printf("parsed filesystem: %v\n", fs)
 
 	for canRelocate(fs) {
 		iNextFree := nextFreeIndex(fs)
-		toRelocate := popLastFileBlock(fs)
+		toRelocate := popLastFile(fs)
+		fs[iNextFree] = toRelocate
+	}
+
+	// fmt.Println("compressed filesystem", fs)
+	fmt.Printf("The compressed filesystem checksum is %v.\n", calculateChecksum(fs))
+}
+
+func compressFileSystemBlocks(inputfile string) {
+	line := c.ReadLine(inputfile)
+	fs, blockNums := parseFs(line)
+	// fmt.Printf("config filesystem: %v\n", line)
+	// fmt.Printf("parsed filesystem: %v\n", fs)
+
+	for canRelocate(fs) {
+		toRelocate := getFileBlock(fs)
+		iNextFree := nextFreeBlockIndex(fs, len(toRelocate))
+		// if iNextFree != -1 {
+		// 	for
+		// }
+
 		fs[iNextFree] = toRelocate
 	}
 
