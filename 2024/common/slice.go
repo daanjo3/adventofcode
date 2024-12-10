@@ -86,3 +86,32 @@ func ReadRuneMatrix(inputfile string) [][]rune {
 	})
 	return matrix
 }
+
+func ReadIntMatrix(inputfile string) [][]int {
+	matrix := [][]int{}
+	ReadLines(inputfile, func(s string) {
+		row := []int{}
+		for _, v := range s {
+			row = append(row, Must(strconv.Atoi(string(v))))
+		}
+		matrix = append(matrix, row)
+	})
+	return matrix
+}
+
+func ArrUniquePoint(slice []Point) []Point {
+	unique := []Point{}
+	for _, v := range slice {
+		skip := false
+		for _, u := range unique {
+			if v == u {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			unique = append(unique, v)
+		}
+	}
+	return unique
+}
