@@ -47,17 +47,20 @@ func findTrails(matrix [][]int, curPos c.Point, height int) []c.Point {
 
 func sumTrails(inputfile string) {
 	matrix := c.ReadIntMatrix(inputfile)
-	sumTrails := 0
+	sumTrailScores := 0
+	sumTrailRatings := 0
 	for y, row := range matrix {
 		for x, val := range row {
 			if val == 0 {
 				trailhead := c.Point{X: x, Y: y}
-				trails := c.ArrUniquePoint(findTrails(matrix, trailhead, 0))
-				fmt.Printf("Trailhead %s found %v trailtops\n", trailhead, trails)
-				// return
-				sumTrails += len(trails)
+				trails := findTrails(matrix, trailhead, 0)
+				trailRating := len(trails)
+				trailScore := len(c.ArrUniquePoint(trails))
+				// fmt.Printf("Trailhead %s found %v trailtops\n", trailhead, trails)
+				sumTrailScores += trailScore
+				sumTrailRatings += trailRating
 			}
 		}
 	}
-	fmt.Printf("There are %v unique trails available.\n", sumTrails)
+	fmt.Printf("There are %v unique trail-head-top routes and the sum of rating is %v.\n", sumTrailScores, sumTrailRatings)
 }
