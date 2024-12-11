@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 
@@ -10,27 +11,6 @@ import (
 
 func main() {
 	x.AdventCommand("day3", parseUncorrupted, parseUncorruptedDoing)
-}
-
-func findEnabledRange(dos [][]int, donts [][]int) (int, int) {
-	return 0, 0
-}
-
-func parseUncorruptedDoing(inputfile string) {
-	// patternMul := regexp.MustCompile(`mul\([0-9]{1,3},[0-9]{1,3}\)`)
-	patternDont := regexp.MustCompile(`don't\(\)`)
-	patternDo := regexp.MustCompile(`do\(\)`)
-
-	total := 0
-	x.ReadLines(inputfile, func(line string) {
-		donts := patternDont.FindAllStringIndex(line, -1)
-		dos := patternDo.FindAllStringIndex(line, -1)
-		// operations := patternMul.FindAllStringIndex(line, -1)
-		// fmt.Printf("dos: %v\ndon'ts: %v\nops: %v\n", dos, donts, operations)
-		fmt.Printf("dos: %v\ndon'ts: %v\n", dos, donts)
-	})
-
-	fmt.Printf("The sum of valid operation outcomes is %v.\n", total)
 }
 
 func handleOperation(op string) int {
@@ -51,6 +31,58 @@ func parseUncorrupted(inputfile string) {
 		for _, op := range operations {
 			total += handleOperation(op)
 		}
+	})
+
+	fmt.Printf("The sum of valid operation outcomes is %v.\n", total)
+}
+
+func firstOrMax(values []int) int {
+	if values == nil {
+		return math.MaxInt
+	}
+	return values[0]
+}
+
+func parseUncorruptedDoing(inputfile string) {
+	patternMul := regexp.MustCompile(`mul\(\d{1,3},\d{1,3}\)`)
+	patternDont := regexp.MustCompile(`don't\(\)`)
+	patternDo := regexp.MustCompile(`do\(\)`)
+
+	total := 0
+	enabled := true
+	x.ReadLines(inputfile, func(line string) {
+		remainder := line
+		for {
+			muls := patternMul.FindStringIndex(remainder)
+			mul := firstOrMax(muls)
+			dont := firstOrMax(patternDont.FindStringIndex(remainder))
+			do := firstOrMax(patternDo.FindStringIndex(remainder))
+
+			if do == mul && mul == dont {
+				break
+			}
+
+			lowesti := 0
+			if enabled {
+				if mul < dont {
+					op := remainder[muls[0]:muls[1]]
+					total += handleOperation(op)
+					lowesti = mul + 4
+				} else {
+					enabled = false
+					lowesti = dont + 4
+				}
+			} else {
+				if do == math.MaxInt {
+					break
+				}
+				enabled = true
+				lowesti = do + 4
+			}
+
+			remainder = remainder[lowesti:]
+		}
+
 	})
 
 	fmt.Printf("The sum of valid operation outcomes is %v.\n", total)
