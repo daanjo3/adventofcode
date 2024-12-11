@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 )
 
 func AdventCommand(dayDirName string, oneStarFunc func(string), twoStarFunc func(string)) {
@@ -39,6 +40,10 @@ func AdventCommand(dayDirName string, oneStarFunc func(string), twoStarFunc func
 	}
 
 	fmt.Printf("Running %s: part=%s input=%s\n", dayDirName, starMsgPart, inputMsgPart)
+	start := time.Now()
+	defer func() {
+		fmt.Printf("Took %s\n", time.Since(start))
+	}()
 	starFunc(inputfile)
 }
 

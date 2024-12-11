@@ -72,8 +72,6 @@ func countStones(inputfile string, blinkTimes int) {
 
 	}
 
-	fmt.Println(countMap)
-
 	sum := 0
 	for _, count := range countMap {
 		sum += count
