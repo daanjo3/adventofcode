@@ -68,7 +68,6 @@ func sortPrintFiles(inputfile string, solve bool) {
 		if strings.Contains(line, ",") {
 			values := parseLine(line)
 			valuesCp := parseLine(line)
-			fmt.Println("unsorted", values)
 			sort.Slice(values, func(i, j int) bool {
 				found, entry := findMapEntry(sortMap, values[i], values[j])
 				if !found {
@@ -80,7 +79,9 @@ func sortPrintFiles(inputfile string, solve bool) {
 				return false
 			})
 			if solve {
-				sumMiddle += values[len(values)/2]
+				if !reflect.DeepEqual(values, valuesCp) {
+					sumMiddle += values[len(values)/2]
+				}
 			} else if reflect.DeepEqual(values, valuesCp) {
 				sumMiddle += values[len(values)/2]
 			}
