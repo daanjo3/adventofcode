@@ -30,72 +30,54 @@ func transformStone(stone int) []int {
 	return []int{stone * 2024}
 }
 
-func blink(stones []int) []int {
-	newArr := []int{}
-	for _, stone := range stones {
-		newArr = append(newArr, transformStone(stone)...)
-	}
-	return newArr
-}
-
-func countStoneNew(stones []int, blinkTimes int, ch )
-
-func countStonesN(stones []int, blinkTimes int, ch chan int) {
-	for 
-
-	for i := range blinkTimes {
-
-		stones = blink(stones)
-
-
-		for stone := stones {
-
-		}
-
-		fmt.Printf("Blinked for the %vth of %v time, now I got %v stones\n", i, blinkTimes, len(stones))
-
-		if len(stones)%2 == 0 {
-			newCh := make(chan int, 2)
-
-			var left, right []int
-			copy(left, stones[:len(stones)/2])
-			copy(right, stones[len(stones)/2:])
-
-			go countStonesN(left, blinkTimes-(i+1), newCh)
-			go countStonesN(right, blinkTimes-(i+1), newCh)
-
-			sum := 0
-			for range 2 {
-				sum += <-newCh
-			}
-			ch <- sum
-			return
-		}
-	}
-}
-
 func countStones(inputfile string, blinkTimes int) {
 	stones := c.ParseIntArray(c.ReadLine(inputfile))
 
-	ch := make(chan int, len(stones))
+	countMap := map[int]int{}
+
 	for _, stone := range stones {
-		go countStonesN([]int{stone}, blinkTimes, ch)
+		val, ok := countMap[stone]
+		if !ok {
+			countMap[stone] = 1
+		} else {
+			countMap[stone] = val + 1
+		}
 	}
+
+	for range blinkTimes {
+
+		newCountMap := map[int]int{}
+
+		for num, count := range countMap {
+			if count == 0 {
+				continue
+			}
+
+			transformed := transformStone(num)
+
+			for _, newNum := range transformed {
+
+				newNumCount, ok := newCountMap[newNum]
+				if !ok {
+					newCountMap[newNum] = count
+				} else {
+					newCountMap[newNum] = newNumCount + count
+				}
+
+			}
+
+		}
+
+		countMap = newCountMap
+
+	}
+
+	fmt.Println(countMap)
 
 	sum := 0
-	for val := range ch {
-		sum += val
+	for _, count := range countMap {
+		sum += count
 	}
 
-	fmt.Printf("After blinking %v times I have %v stones!\n", blinkTimes, len(stones))
+	fmt.Printf("After blinking %v times I have %v stones!\n", blinkTimes, sum)
 }
-
-// 0 => 1
-// 1 => 2024
-// 2024 => 20 24
-// 20 => 2 0
-// 24 => 2 4
-// 2 => 4048 => 40 48 => 4 0 4 8
-// 0 new cycle
-// 2 => 4048 => 40 48 => 4 0 4 8
-// 4 => 8096 => 80 => 96 => 8 0 9 6
