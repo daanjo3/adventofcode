@@ -1,15 +1,24 @@
 package main
 
 import (
+	"fmt"
+
 	c "github.com/daanjo3/adventofcode/2024/common"
 )
 
 func main() {
 	c.AdventCommand("day12",
-		calculateFenchCosts,
+		calculateFenceCosts,
 		c.PlaceholderFunc,
 	)
 }
+
+const (
+	NORTH = iota
+	EAST
+	SOUTH
+	WEST
+)
 
 type Plot struct {
 	Point        c.Point
@@ -18,27 +27,82 @@ type Plot struct {
 	Type         rune
 }
 
-func calculateFenchCosts(inputfile string) {
-	plots := [][]Plot{}
+func spreadRegion(plots [][]*Plot, curPlot *Plot, regionNum int) {
+	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Point) {
+		if (*nplot).Region != -1 {
+			return
+		}
+		if curPlot.Type == (*nplot).Type {
+			(*nplot).Region = regionNum
+			spreadRegion(plots, *nplot, regionNum)
+		}
+	})
+}
+
+func calculateFenceCosts(inputfile string) {
+	plots := [][]*Plot{}
+	regionSize := map[int]int{}
 
 	matrix := c.ReadRuneMatrix(inputfile)
 	for y, row := range matrix {
-		plotsY := []Plot{}
+		plotsY := []*Plot{}
 		for x, char := range row {
 			point := c.Point{X: x, Y: y}
 			pval := 0
-			c.ScanNeighbors(matrix, point, func(nval rune, npos c.Point) {
-				if nval != char {
+			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, _ c.Point) {
+				if *nval != char {
 					pval++
 				}
 			})
-			plotsY = append(plotsY, Plot{
-				Point: c.Point{X: x, Y: y},
+			if point.X == 0 || point.X == len(matrix[y])-1 {
+				pval++
+			}
+			if point.Y == 0 || point.Y == len(matrix)-1 {
+				pval++
+			}
+			plotsY = append(plotsY, &Plot{
+				Point:        point,
+				PerimiterVal: pval,
+				Region:       -1,
+				Type:         char,
 			})
 		}
 		plots = append(plots, plotsY)
 	}
 
+	regionNum := 0
+
+	// Divide plots in regions
+	for _, row := range plots {
+		for _, plot := range row {
+			if plot.Region != -1 {
+				continue
+			}
+			plot.Region = regionNum
+			spreadRegion(plots, plot, regionNum)
+			regionNum++
+		}
+	}
+
+	// Calculate size per region
+	for _, row := range plots {
+		for _, plot := range row {
+			if _, ok := regionSize[plot.Region]; !ok {
+				regionSize[plot.Region] = 0
+			}
+			regionSize[plot.Region]++
+		}
+	}
+
+	// Calculate costs: perimiter * regionSize
+	totalCost := 0
+	for _, row := range plots {
+		for _, plot := range row {
+			totalCost += plot.PerimiterVal * regionSize[plot.Region]
+		}
+	}
+
+	fmt.Printf("This overly complicated algorithm sets the total fence cost to %v.\n", totalCost)
 }
 
 // 0 => 1
