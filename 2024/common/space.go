@@ -46,19 +46,39 @@ func isInBounds[T any](matrix [][]T, point Point) bool {
 	return true
 }
 
-func ScanNeighbors[T any](matrix [][]T, point Point, callback func(val *T, point Point, direction Point)) {
-	directions := []Point{
-		{X: 1, Y: 0},  // right / east
-		{X: 0, Y: -1}, // down / south
-		{X: -1, Y: 0}, // left / west
-		{X: 0, Y: 1},  // up / north
-	}
+type Ordinal int
 
-	for _, direction := range directions {
-		neighborPos := point.Added(direction)
+const (
+	NORTH Ordinal = iota
+	EAST
+	SOUTH
+	WEST
+)
+
+var Ordinals = []Ordinal{
+	NORTH,
+	EAST,
+	SOUTH,
+	WEST,
+}
+
+func (o Ordinal) toPoint() Point {
+	if o == NORTH {
+		return Point{X: 0, Y: 1}
+	} else if o == EAST {
+		return Point{X: 1, Y: 0}
+	} else if o == SOUTH {
+		return Point{X: 0, Y: -1}
+	}
+	return Point{X: -1, Y: 0}
+}
+
+func ScanNeighbors[T any](matrix [][]T, point Point, callback func(val *T, point Point, ord Ordinal)) {
+	for _, ordinal := range Ordinals {
+		neighborPos := point.Added(ordinal.toPoint())
 		if isInBounds(matrix, neighborPos) {
 			neighborVal := matrix[neighborPos.Y][neighborPos.X]
-			callback(&neighborVal, neighborPos, direction)
+			callback(&neighborVal, neighborPos, ordinal)
 		}
 	}
 }
