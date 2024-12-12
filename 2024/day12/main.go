@@ -13,22 +13,16 @@ func main() {
 	)
 }
 
-const (
-	NORTH = iota
-	EAST
-	SOUTH
-	WEST
-)
-
 type Plot struct {
 	Point        c.Point
+	Fences       map[c.Ordinal]int
 	PerimiterVal int
 	Region       int
 	Type         rune
 }
 
 func spreadRegion(plots [][]*Plot, curPlot *Plot, regionNum int) {
-	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Point) {
+	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Ordinal) {
 		if (*nplot).Region != -1 {
 			return
 		}
@@ -39,30 +33,51 @@ func spreadRegion(plots [][]*Plot, curPlot *Plot, regionNum int) {
 	})
 }
 
+func checkNeighborFence(plots [][]*Plot, curPlot *Plot, ord c.Ordinal, fenceId int) {
+	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Ordinal) {
+		if curPlot.Type != (*nplot).Type {
+			return
+		}
+		if val, ok := (*nplot).Fences[ord]; !ok || val != -1 {
+			return
+		}
+
+		(*nplot).Fences[ord] = fenceId
+		checkNeighborFence(plots, *nplot, ord, fenceId)
+	})
+}
+
 func calculateFenceCosts(inputfile string) {
 	plots := [][]*Plot{}
-	regionSize := map[int]int{}
+	regionSize := map[int][]*Plot{}
 
 	matrix := c.ReadRuneMatrix(inputfile)
 	for y, row := range matrix {
 		plotsY := []*Plot{}
 		for x, char := range row {
 			point := c.Point{X: x, Y: y}
-			pval := 0
-			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, _ c.Point) {
+			fences := map[c.Ordinal]int{}
+			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, ord c.Ordinal) {
 				if *nval != char {
-					pval++
+					fences[ord] = -1
 				}
 			})
-			if point.X == 0 || point.X == len(matrix[y])-1 {
-				pval++
+			if point.X == 0 {
+				fences[c.WEST] = -1
 			}
-			if point.Y == 0 || point.Y == len(matrix)-1 {
-				pval++
+			if point.X == len(matrix[y])-1 {
+				fences[c.EAST] = -1
+			}
+			if point.Y == 0 {
+				fences[c.NORTH] = -1
+			}
+			if point.Y == len(matrix)-1 {
+				fences[c.SOUTH] = -1
 			}
 			plotsY = append(plotsY, &Plot{
 				Point:        point,
-				PerimiterVal: pval,
+				Fences:       fences,
+				PerimiterVal: len(fences),
 				Region:       -1,
 				Type:         char,
 			})
@@ -88,9 +103,9 @@ func calculateFenceCosts(inputfile string) {
 	for _, row := range plots {
 		for _, plot := range row {
 			if _, ok := regionSize[plot.Region]; !ok {
-				regionSize[plot.Region] = 0
+				regionSize[plot.Region] = []*Plot{}
 			}
-			regionSize[plot.Region]++
+			regionSize[plot.Region] = append(regionSize[plot.Region], plot)
 		}
 	}
 
@@ -98,9 +113,27 @@ func calculateFenceCosts(inputfile string) {
 	totalCost := 0
 	for _, row := range plots {
 		for _, plot := range row {
-			totalCost += plot.PerimiterVal * regionSize[plot.Region]
+			totalCost += plot.PerimiterVal * len(regionSize[plot.Region])
 		}
 	}
+
+	// for _, row := range plots {
+	// 	for _, plot := range row {
+	// 		// Means not yet visited
+	// 		if c.SomeMapKey(plot.Fences) != -1 {
+	// 			for ord, fenceId := range plot.Fences {
+
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	// Loop over de matrix
+	// Bij de eerste cel van een unieke regio
+	// Loop over de perimiter values
+	// Plot.Map[Perimiter] => FenceId
+	// Loop over neighbors met zelfde perimiter
+	// Als nog geen fenceId: geef fenceId
 
 	fmt.Printf("This overly complicated algorithm sets the total fence cost to %v.\n", totalCost)
 }
