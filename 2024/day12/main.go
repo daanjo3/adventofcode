@@ -13,13 +13,6 @@ func main() {
 	)
 }
 
-const (
-	NORTH = iota
-	EAST
-	SOUTH
-	WEST
-)
-
 type Plot struct {
 	Point        c.Point
 	PerimiterVal int
@@ -28,7 +21,7 @@ type Plot struct {
 }
 
 func spreadRegion(plots [][]*Plot, curPlot *Plot, regionNum int) {
-	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Point) {
+	c.ScanNeighbors(plots, curPlot.Point, func(nplot **Plot, npos c.Point, _ c.Ordinal) {
 		if (*nplot).Region != -1 {
 			return
 		}
@@ -49,7 +42,7 @@ func calculateFenceCosts(inputfile string) {
 		for x, char := range row {
 			point := c.Point{X: x, Y: y}
 			pval := 0
-			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, _ c.Point) {
+			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, ord c.Ordinal) {
 				if *nval != char {
 					pval++
 				}
