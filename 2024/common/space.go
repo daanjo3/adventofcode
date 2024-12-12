@@ -35,3 +35,18 @@ func (p Point) Subtract(other Point) Point {
 func (p Point) String() string {
 	return fmt.Sprintf("Point(x: %v, y: %v)", p.X, p.Y)
 }
+
+func ScanNeighbors[T any](matrix [][]T, point Point, callback func(val T, point Point)) {
+	directions := []Point{
+		{X: 1, Y: 0},  // right
+		{X: 0, Y: -1}, // down
+		{X: -1, Y: 0}, // left
+		{X: 0, Y: 1},  // up
+	}
+
+	for _, direction := range directions {
+		neighborPos := point.Added(direction)
+		neighborVal := matrix[neighborPos.Y][neighborPos.X]
+		callback(neighborVal, neighborPos)
+	}
+}
