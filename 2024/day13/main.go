@@ -35,30 +35,23 @@ func extendedGCD(a, b int) (int, int, int) {
 	}
 }
 
-func solve(ax, bx, px, ay, by, py int) (int, int) {
-	fmt.Printf("Solving: %v = %v+%v and %v = %v+%v\n", px, ax, bx, py, ay, by)
+// ax = a = 94
+// ay = b = 22
+// bx = c = 34
+// by = d = 67
 
-	det := ax*by - ay*bx
-	fmt.Println("determinant:", det)
-	if det == 0 {
-		return 0, 0
-	}
+func solve(a, c, x, b, d, y int) (int, int) {
+	fmt.Printf("Solving: %v = %v+%v and %v = %v+%v\n", x, a, b, y, c, d)
 
-	// Solve for a
-	a := (px*by - py*bx) / det
+	ainv := d
+	binv := -1 * b
+	cinv := -1 * c
+	dinv := a
+	aNum := (x*ainv)/(a*d-b*c) + (y*binv)/(a*d-b*c)
+	bNum := (x*cinv)/(a*d-b*c) + (y*dinv)/(a*d-b*c)
 
-	// Solve for b
-	b := (ax*py - ay*px) / det
-
-	if a < 0 || b < 0 {
-		return 0, 0
-	}
-
-	fmt.Printf("A: %v, B: %v\n\n", a, b)
-	if a > 100 || b > 100 {
-		return 0, 0
-	}
-	return a, b
+	fmt.Println("Calculated to", aNum, bNum)
+	return int(aNum), int(bNum)
 }
 
 func findLeastAmountOfTokens(inputfile string) {
