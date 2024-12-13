@@ -42,7 +42,7 @@ func calculateFenceCosts(inputfile string) {
 		for x, char := range row {
 			point := c.Point{X: x, Y: y}
 			pval := 0
-			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, ord c.Ordinal) {
+			c.ScanNeighbors(matrix, point, func(nval *rune, npos c.Point, _ c.Ordinal) {
 				if *nval != char {
 					pval++
 				}
