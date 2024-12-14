@@ -8,7 +8,13 @@ import (
 	"os"
 )
 
-const SESSION_COOKIE = "session="
+func getSessionCookie() string {
+	bytes, err := os.ReadFile("./session")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return fmt.Sprintf("session=%s", string(bytes))
+}
 
 func buildMain(day string) string {
 	return fmt.Sprintf(`
@@ -30,18 +36,18 @@ func main() {
 func getInput(day string) []byte {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://adventofcode.com/2024/day/%s/input", day), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
-	req.Header.Add("Cookie", SESSION_COOKIE)
+	req.Header.Add("Cookie", getSessionCookie())
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	return body
 }
