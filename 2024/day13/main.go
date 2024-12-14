@@ -11,50 +11,27 @@ import (
 
 func main() {
 	c.AdventCommand("day13",
-		findLeastAmountOfTokens,
-		c.PlaceholderFunc,
+		func(inputfile string) { findLeastAmountOfTokens(inputfile, 0) },
+		func(inputfile string) { findLeastAmountOfTokens(inputfile, 10000000000000) },
 	)
 }
 
-func GCD(a, b int) int {
-	for b != 0 {
-		t := b
-		b = a % b
-		a = t
+func solve(px, py, ax, ay, bx, by int, offset int) int {
+	priceX := px + offset
+	priceY := py + offset
+
+	det := ax*by - ay*bx
+
+	a := (priceX*by - priceY*bx) / det
+	b := (ax*priceY - ay*priceX) / det
+
+	if ax*a+bx*b == priceX && ay*a+by*b == priceY {
+		return a*3 + b
 	}
-	return a
+	return 0
 }
 
-// Extended Euclidean algorithm to find the coefficients (Bezout's identity)
-func extendedGCD(a, b int) (int, int, int) {
-	if b == 0 {
-		return 1, 0, a // gcd(a, 0) = a
-	} else {
-		x1, y1, g := extendedGCD(b, a%b)
-		return y1, x1 - (a/b)*y1, g
-	}
-}
-
-// ax = a = 94
-// ay = b = 22
-// bx = c = 34
-// by = d = 67
-
-func solve(a, c, x, b, d, y int) (int, int) {
-	fmt.Printf("Solving: %v = %v+%v and %v = %v+%v\n", x, a, b, y, c, d)
-
-	ainv := d
-	binv := -1 * b
-	cinv := -1 * c
-	dinv := a
-	aNum := (x*ainv)/(a*d-b*c) + (y*binv)/(a*d-b*c)
-	bNum := (x*cinv)/(a*d-b*c) + (y*dinv)/(a*d-b*c)
-
-	fmt.Println("Calculated to", aNum, bNum)
-	return int(aNum), int(bNum)
-}
-
-func findLeastAmountOfTokens(inputfile string) {
+func findLeastAmountOfTokens(inputfile string, offset int) {
 	cost := 0
 	buttonPattern := regexp.MustCompile(`Button [A,B]: X\+(?P<X>\d+), Y\+(?P<Y>\d+)`)
 	prizePattern := regexp.MustCompile(`Prize: X=(?P<X>\d+), Y=(?P<Y>\d+)`)
@@ -79,13 +56,11 @@ func findLeastAmountOfTokens(inputfile string) {
 			py = c.Must(strconv.Atoi(matches[2]))
 		}
 		if len(line) == 0 {
-			a, b := solve(ax, bx, px, ay, by, py)
-			cost += a*3 + b
+			cost += solve(px, py, ax, ay, bx, by, offset)
 		}
 	})
 	// Because the last empty line is not returned by readlines
-	a, b := solve(ax, bx, px, ay, by, py)
-	cost += a*3 + b
+	cost += solve(px, py, ax, ay, bx, by, offset)
 
 	fmt.Printf("In total I would be out of %v coins\n", cost)
 
