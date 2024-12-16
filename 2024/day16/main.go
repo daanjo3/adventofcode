@@ -16,7 +16,46 @@ func main() {
 const START = 'S'
 const END = 'E'
 
-func move(matrix [][]rune, visited []string) {
+type Reindeer struct {
+	pos    c.Point
+	facing c.Ordinal
+}
+
+func (r Reindeer) forward() {
+	r.pos = r.pos.Added(r.facing.ToPoint())
+}
+
+func (r Reindeer) turnLeft() {
+	if r.facing == c.NORTH {
+		r.facing = c.WEST
+	}
+	if r.facing == c.WEST {
+		r.facing = c.SOUTH
+	}
+	if r.facing == c.SOUTH {
+		r.facing = c.EAST
+	}
+	if r.facing == c.EAST {
+		r.facing = c.NORTH
+	}
+}
+
+func (r Reindeer) turnRight() {
+	if r.facing == c.NORTH {
+		r.facing = c.EAST
+	}
+	if r.facing == c.EAST {
+		r.facing = c.SOUTH
+	}
+	if r.facing == c.SOUTH {
+		r.facing = c.WEST
+	}
+	if r.facing == c.WEST {
+		r.facing = c.NORTH
+	}
+}
+
+func move(matrix [][]rune, visited []string) int {
 	// forward (if possible)
 	// turn right (if unvisited)
 	// turn left (if unvisited)
