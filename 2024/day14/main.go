@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,13 +28,6 @@ type Robot struct {
 	Velocity c.Point
 }
 
-type Quadrant struct {
-	minX int
-	maxX int
-	minY int
-	maxY int
-}
-
 func maybeTeleport(pos c.Point, width, height int) c.Point {
 	newX, newY := pos.X, pos.Y
 	if pos.X < 0 {
@@ -42,10 +36,10 @@ func maybeTeleport(pos c.Point, width, height int) c.Point {
 	if pos.Y < 0 {
 		newY = height + pos.Y
 	}
-	if pos.X > width {
+	if pos.X > width-1 {
 		newX = pos.X - width
 	}
-	if pos.Y > height {
+	if pos.Y > height-1 {
 		newY = pos.Y - height
 	}
 	return c.Point{X: newX, Y: newY}
@@ -56,12 +50,7 @@ func simulate(robot *Robot, cycles, width, height int) {
 		newPosX := robot.Position.X + robot.Velocity.X
 		newPosY := robot.Position.Y + robot.Velocity.Y
 		robot.Position = maybeTeleport(c.Point{X: newPosX, Y: newPosY}, width, height)
-		// fmt.Println("cycle", i+1, robot)
 	}
-}
-
-func countRobots(robots []Robot, quadrant []int) {
-
 }
 
 func findTheChillQuadrant(inputfile string) {
@@ -81,14 +70,30 @@ func findTheChillQuadrant(inputfile string) {
 	})
 
 	quadrants := [][]int{
-		[]int{0, width / 2, 0, height / 2},
-		[]int{0, width / 2, height / 2, height},
-		[]int{width / 2, width, 0, height / 2},
-		[]int{width / 2, width, height / 2, height},
+		{0, width / 2, 0, height / 2},
+		{0, width / 2, height/2 + 1, height},
+		{width/2 + 1, width, 0, height / 2},
+		{width/2 + 1, width, height/2 + 1, height},
 	}
 
 	safetyFactor := 1
-	for quadrant := range quadrants {
-
+	for _, quadrant := range quadrants {
+		numRobots := countRobots(robots, quadrant)
+		safetyFactor *= numRobots
 	}
+
+	fmt.Printf("The quandrant safety factor is %v\n", safetyFactor)
+}
+
+func countRobots(robots []Robot, quadrant []int) int {
+	count := 0
+	for _, robot := range robots {
+		if robot.Position.X >= quadrant[0] &&
+			robot.Position.X < quadrant[1] &&
+			robot.Position.Y >= quadrant[2] &&
+			robot.Position.Y < quadrant[3] {
+			count++
+		}
+	}
+	return count
 }
