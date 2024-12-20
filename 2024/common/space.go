@@ -62,7 +62,7 @@ var Ordinals = []Ordinal{
 	WEST,
 }
 
-func (o Ordinal) toPoint() Point {
+func (o Ordinal) ToPoint() Point {
 	if o == NORTH {
 		return Point{X: 0, Y: 1}
 	} else if o == EAST {
@@ -75,7 +75,7 @@ func (o Ordinal) toPoint() Point {
 
 func ScanNeighbors[T any](matrix [][]T, point Point, callback func(val *T, point Point, ord Ordinal)) {
 	for _, ordinal := range Ordinals {
-		neighborPos := point.Added(ordinal.toPoint())
+		neighborPos := point.Added(ordinal.ToPoint())
 		if isInBounds(matrix, neighborPos) {
 			neighborVal := matrix[neighborPos.Y][neighborPos.X]
 			callback(&neighborVal, neighborPos, ordinal)
