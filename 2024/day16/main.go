@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"slices"
 
 	c "github.com/daanjo3/adventofcode/2024/common"
 )
@@ -16,63 +16,45 @@ func main() {
 const START = 'S'
 const END = 'E'
 
+type MazeBlock int
+
+const (
+	PATH MazeBlock = iota
+	SOLID
+)
+
+type Maze [][]MazeBlock
+
+func (m *Maze) get(pos c.Point) MazeBlock {
+	for y, row := range *m {
+		for x, block := range row {
+			if pos.Y == y && pos.X == x {
+				return block
+			}
+		}
+	}
+	panic("invalid position")
+}
+
 type Reindeer struct {
-	pos    c.Point
-	facing c.Ordinal
+	maze     *Maze
+	visited  []c.Point
+	pos      *c.Point
+	facing   c.Ordinal
+	pathCost int
 }
 
-func (r Reindeer) forward() {
-	r.pos = r.pos.Added(r.facing.ToPoint())
-}
-
-func (r Reindeer) turnLeft() {
-	if r.facing == c.NORTH {
-		r.facing = c.WEST
+func (r *Reindeer) listMoves() []c.Ordinal {
+	possible := []c.Ordinal{}
+	for _, dir := range c.Ordinals {
+		newPos := r.pos.Added(dir.ToPoint())
+		if slices.Contains(r.visited, newPos) {
+			continue
+		}
+		if r.maze.get(newPos) == SOLID {
+			continue
+		}
+		possible = append(possible, dir)
 	}
-	if r.facing == c.WEST {
-		r.facing = c.SOUTH
-	}
-	if r.facing == c.SOUTH {
-		r.facing = c.EAST
-	}
-	if r.facing == c.EAST {
-		r.facing = c.NORTH
-	}
-}
-
-func (r Reindeer) turnRight() {
-	if r.facing == c.NORTH {
-		r.facing = c.EAST
-	}
-	if r.facing == c.EAST {
-		r.facing = c.SOUTH
-	}
-	if r.facing == c.SOUTH {
-		r.facing = c.WEST
-	}
-	if r.facing == c.WEST {
-		r.facing = c.NORTH
-	}
-}
-
-func move(matrix [][]rune, visited []string) int {
-	// forward (if possible)
-	// turn right (if unvisited)
-	// turn left (if unvisited)
-}
-
-func findMazeCost(inputfile string) {
-	matrix := c.ReadRuneMatrix(inputfile)
-	faced := [][]string{}
-
-	startPos, err := c.MatrixFindRune(matrix, START)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	startHeading := c.PointHeading{X: startPos.X, Y: startPos.Y, Facing: c.EAST}
-	endPos, err := c.MatrixFindRune(matrix, END)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
+	return possible
 }
