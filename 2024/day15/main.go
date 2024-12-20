@@ -14,83 +14,119 @@ func main() {
 }
 
 type Grid struct {
-	boxes  []Moveable
-	robot  Moveable
-	width  int
-	height int
+	objects []*Object
+	robot   *Object
+	width   int
+	height  int
 }
 
-func (g *Grid) getMoveable(pos c.Point) *Moveable {
-	for _, m := range g.boxes {
-		if m.pos == pos {
-			return &m
+func (g *Grid) getObject(pos c.Point) *Object {
+	for _, m := range g.objects {
+		if *m.pos == pos {
+			return m
 		}
 	}
 	return nil
 }
 
-func (g *Grid) outOfBounds(pos c.Point) bool {
-	return pos.X < 0 || pos.Y < 0 || pos.X > g.width-1 || pos.Y > g.height-1
+func (g *Grid) addRobot(pos *c.Point) {
+	g.robot = &Object{grid: g, pos: pos, moveable: true, icon: '@'}
 }
 
-func (g *Grid) addBox(pos c.Point) {
-	g.boxes = append(g.boxes, Moveable{grid: g, pos: pos})
+func (g *Grid) addBox(pos *c.Point) {
+	g.objects = append(g.objects, &Object{grid: g, pos: pos, moveable: true, icon: 'O'})
 }
 
-type Moveable struct {
-	grid *Grid
-	pos  c.Point
+func (g *Grid) addWall(pos *c.Point) {
+	g.objects = append(g.objects, &Object{grid: g, pos: pos, moveable: false, icon: '#'})
 }
 
-func (m *Moveable) gps() int {
+func (g *Grid) print() {
+	for y := range g.height {
+		for x := range g.width {
+			if g.robot.pos.X == x && g.robot.pos.Y == y {
+				fmt.Print("@")
+			} else {
+				obj := g.getObject(c.Point{X: x, Y: y})
+				if obj == nil {
+					fmt.Print(".")
+				} else if obj.moveable {
+					fmt.Print("O")
+				} else {
+					fmt.Print("#")
+				}
+			}
+		}
+		fmt.Print("\n")
+	}
+}
+
+type Object struct {
+	grid     *Grid
+	moveable bool
+	pos      *c.Point
+	icon     rune
+}
+
+func (m *Object) gps() int {
 	return 100*(m.pos.Y+1) + m.pos.X + 1
 }
 
-func (m *Moveable) move(dir c.Ordinal) bool {
+func (m *Object) move(dir c.Ordinal) bool {
 	newPos := m.pos.Added(dir.ToPoint())
-	neighbor := m.grid.getMoveable(newPos)
+	neighbor := m.grid.getObject(newPos)
 	if neighbor != nil {
+		if !neighbor.moveable {
+			return false
+		}
 		if !neighbor.move(dir) {
 			return false
 		}
 	}
-	if m.grid.outOfBounds(newPos) {
-		return false
-	}
-	m.pos = newPos
+	// fmt.Printf("Updating %s from %v to %v\n", string(m.icon), m.pos, newPos)
+	m.pos = &newPos
+	// m.grid.print()
 	return true
 }
 
 func letRobotRun(inputfile string) {
 	parsingMaze := true
 	grid := Grid{
-		width:  -1,
-		height: -2, // account for ##### borders
-		boxes:  []Moveable{},
+		width:   -1,
+		height:  0,
+		objects: []*Object{},
 	}
 	y := 0
 	c.ReadLines(inputfile, func(line string) {
-		if parsingMaze {
-			if grid.width == -1 {
-				grid.width = len(line) - 1
-			}
-			grid.height++
-			for x, char := range line {
-				if char == 'O' {
-					grid.addBox(c.Point{X: x, Y: y})
-				}
-				if char == '@' {
-					grid.robot = Moveable{grid: &grid, pos: c.Point{X: x, Y: y}}
-				}
-			}
-			y++
-		}
 		if len(line) == 0 {
 			parsingMaze = false
 			return
 		}
+		if parsingMaze {
+			if grid.width == -1 {
+				grid.width = len(line)
+			}
+			grid.height++
+			for x, char := range line {
+				if char == '.' {
+					continue
+				}
+				pos := c.Point{X: x, Y: y}
+				if char == 'O' {
+					grid.addBox(&pos)
+				} else if char == '@' {
+					grid.addRobot(&pos)
+				} else if char == '#' {
+					grid.addWall(&pos)
+				} else {
+					panic("Uncaught character")
+				}
+			}
+			y++
+		}
 		if !parsingMaze {
 			for _, char := range line {
+				fmt.Println("Moving %s", string(char), c.NORTH, c.NORTH.ToPoint()) // North is actually south :)
 				if char == '^' {
 					grid.robot.move(c.NORTH)
 				} else if char == '>' {
@@ -102,36 +138,19 @@ func letRobotRun(inputfile string) {
 				} else {
 					panic(fmt.Sprintf("Unknown character %v", char))
 				}
+				// grid.print()
 			}
 		}
 
 	})
 
-	for y := range grid.height + 2 {
-		for x := range grid.width + 2 {
-			if y == 0 || y == grid.height+1 {
-				fmt.Print("#")
-			}
-			if x == 0 || x == grid.width+1 {
-				fmt.Print("#")
-			}
-			if grid.robot.pos.X == x+1 && grid.robot.pos.Y == y+1 {
-				fmt.Print("@")
-			}
-			if grid.getMoveable(c.Point{X: x, Y: y}) == nil {
-				fmt.Print(".")
-			} else {
-				fmt.Print("O")
-			}
-		}
-		fmt.Print("\n")
-	}
-
 	// calculate GPS
 	gpsSum := 0
-	for _, box := range grid.boxes {
+	for _, box := range grid.objects {
 		gpsSum += box.gps()
 	}
+
+	grid.print()
 
 	fmt.Printf("The sum of all GPS scores is %v\n", gpsSum)
 }
