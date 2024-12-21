@@ -69,7 +69,7 @@ type Object struct {
 }
 
 func (m *Object) gps() int {
-	return 100*(m.pos.Y+1) + m.pos.X + 1
+	return 100*(m.pos.Y) + m.pos.X
 }
 
 func (m *Object) move(dir c.Ordinal) bool {
@@ -126,7 +126,6 @@ func letRobotRun(inputfile string) {
 		}
 		if !parsingMaze {
 			for _, char := range line {
-				fmt.Println("Moving %s", string(char), c.NORTH, c.NORTH.ToPoint()) // North is actually south :)
 				if char == '^' {
 					grid.robot.move(c.NORTH)
 				} else if char == '>' {
@@ -138,7 +137,6 @@ func letRobotRun(inputfile string) {
 				} else {
 					panic(fmt.Sprintf("Unknown character %v", char))
 				}
-				// grid.print()
 			}
 		}
 
@@ -147,6 +145,9 @@ func letRobotRun(inputfile string) {
 	// calculate GPS
 	gpsSum := 0
 	for _, box := range grid.objects {
+		if box.icon != 'O' {
+			continue
+		}
 		gpsSum += box.gps()
 	}
 

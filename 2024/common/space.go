@@ -63,14 +63,63 @@ var Ordinals = []Ordinal{
 }
 
 func (o Ordinal) ToPoint() Point {
-	if o == NORTH {
-		return Point{X: 0, Y: 1}
-	} else if o == EAST {
-		return Point{X: 1, Y: 0}
-	} else if o == SOUTH {
+	switch o {
+	case NORTH:
 		return Point{X: 0, Y: -1}
+	case EAST:
+		return Point{X: 1, Y: 0}
+	case SOUTH:
+		return Point{X: 0, Y: 1}
+	case WEST:
+		return Point{X: -1, Y: 0}
+	default:
+		panic("unknown ordinal direction")
 	}
-	return Point{X: -1, Y: 0}
+}
+
+func (o Ordinal) String() string {
+	switch o {
+	case NORTH:
+		return "North"
+	case EAST:
+		return "East"
+	case SOUTH:
+		return "South"
+	case WEST:
+		return "West"
+	default:
+		panic("unknown ordinal direction")
+	}
+}
+
+func (o Ordinal) TurnClockwise() Ordinal {
+	switch o {
+	case NORTH:
+		return EAST
+	case EAST:
+		return SOUTH
+	case SOUTH:
+		return WEST
+	case WEST:
+		return NORTH
+	default:
+		panic("unknown ordinal direction")
+	}
+}
+
+func (o Ordinal) TurnCounterClockwise() Ordinal {
+	switch o {
+	case NORTH:
+		return WEST
+	case WEST:
+		return SOUTH
+	case SOUTH:
+		return EAST
+	case EAST:
+		return NORTH
+	default:
+		panic("unknown ordinal direction")
+	}
 }
 
 func ScanNeighbors[T any](matrix [][]T, point Point, callback func(val *T, point Point, ord Ordinal)) {
