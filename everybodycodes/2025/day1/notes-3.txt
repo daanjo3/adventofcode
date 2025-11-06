@@ -1,0 +1,3 @@
+Drazmirix,Sarnvor,Thazpyxis,Quarndax,Breldax,Karthfarin,Cyndxaril,Fenmal,Xilryn,Agnarnix,Rythanilor,Zalisis,Krynnlith,Ozansin,Urural,Orypyxis,Sorzryn,Thyrosther,Zyrixrax,Harnzryn,Dorwyris,Thalophis,Felmarzyth,Zorsor,Lorncion,Xaralulth,Wyrardith,Xaralural,Lirris,Galbryn
+
+L30,R19,L12,R28,L35,R34,L35,R28,L23,R42,L32,R7,L22,R46,L46,R37,L9,R16,L24,R5,L5,R25,L5,R11,L5,R40,L5,R37,L5,R16,L5,R43,L5,R39,L5,R31,L5,R17,L5,R29,L32,R10,L5,R16,L8,R40,L31,R5,L13,R49,L20,R30,L9,R16,L25,R26,L14,R17,L11
