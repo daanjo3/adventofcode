@@ -8,6 +8,28 @@ import (
 	"github.com/daanjo3/adventofcode/lib"
 )
 
+func main() {
+	lib.Quest("day1", MyName, MomsName, DadsName)
+}
+
+func MyName(filename string) {
+	instructions, names := ReadInput(filename)
+	name := DetermineNameWithoutLoop(instructions, names)
+	fmt.Printf("My.. Name.. Is.. '%s'!\n", name)
+}
+
+func MomsName(filename string) {
+	instructions, names := ReadInput(filename)
+	name := DetermineNameWithLoop(instructions, names)
+	fmt.Printf("Moms.. Name.. Is.. '%s'!\n", name)
+}
+
+func DadsName(filename string) {
+	instructions, names := ReadInput(filename)
+	name := DetermineNameSwitching(instructions, names)
+	fmt.Printf("Dads.. Name.. Is.. '%s'!\n", name)
+}
+
 type Instruction struct {
 	Direction rune
 	Distance  int
@@ -35,15 +57,11 @@ func (i Instruction) String() string {
 	return fmt.Sprintf("%c%d", i.Direction, i.Distance)
 }
 
-func main() {
-	// notes := "day1/example.txt"
-	// notes := "day1/notes.txt"
-	// notes := "day1/notes-2.txt"
-	// notes := "day1/example-3.txt"
-	notes := "day1/notes-3.txt"
+func ReadInput(inputfile string) ([]Instruction, []string) {
 	var names []string
 	var instructions []Instruction
-	lib.ReadLines(notes, func(line string, index int) {
+	fmt.Println("Reading input from", inputfile)
+	lib.ReadLines(inputfile, func(line string, index int) {
 		if index == 0 {
 			names = strings.Split(line, ",")
 		}
@@ -51,11 +69,7 @@ func main() {
 			instructions = NewInstructions(strings.Split(line, ","))
 		}
 	})
-
-	// name := DetermineNameWithoutLoop(instructions, names)
-	// name := DetermineNameWithLoop(instructions, names)
-	name := DetermineNameSwitching(instructions, names)
-	fmt.Printf("My.. Name.. Is.. '%s'!\n", name)
+	return instructions, names
 }
 
 func DetermineNameWithoutLoop(instructions []Instruction, names []string) string {
