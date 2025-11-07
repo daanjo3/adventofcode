@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	lib.Quest("day3", StackCrates)
+	lib.Quest("day3", StackCrates, PackingShrooms)
 }
 
 func ReadInput(inputfile string) []int {
@@ -34,4 +34,13 @@ func StackCrates(inputfile string) {
 		}
 	}
 	fmt.Printf("Found %d of size %d\n", curNum, setSize)
+}
+
+func PackingShrooms(inputfile string) {
+	numbers := ReadInput(inputfile)
+	slices.Sort(numbers)
+	numbers = lib.ArrUnique(numbers)
+	numbers = numbers[:20]
+	total := lib.ArrSum(numbers)
+	fmt.Printf("Least crate size for packing shrooms: %d\n", total)
 }

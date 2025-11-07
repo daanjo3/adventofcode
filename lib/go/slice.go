@@ -99,8 +99,8 @@ func ReadIntMatrix(inputfile string) [][]int {
 	return matrix
 }
 
-func ArrUniquePoint(slice []Point) []Point {
-	unique := []Point{}
+func ArrUnique[T comparable](slice []T) []T {
+	unique := []T{}
 	for _, v := range slice {
 		skip := false
 		for _, u := range unique {
