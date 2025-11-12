@@ -1,0 +1,16 @@
+Ulzris,Oronther,Nyzris,Nyendris,Nyther,Ulther,Ulendris,Oronendris,Oronzris
+
+h > e
+e > n,r
+N > y
+l > e,b
+O > r
+o > n
+U > l
+t > h
+n > d,t,z,e
+r > i,b
+d > r
+z > r
+y > b
+i > s

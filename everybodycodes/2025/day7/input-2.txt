@@ -1,0 +1,31 @@
+Tormyr,Oryquin,Kalloris,Palthiral,Ardenloris,Eldenxar,Palthxar,Eldenquin,Eldencarth,Palthloris,Torlith,Palthlith,Brylzyph,Orymyr,Irynlith,Irynmyr,Erasquin,Palthquin,Shaelquin,Oryzyph,Palthmarn,Erasxar,Eldenzyph,Ardenlith,Erasiral,Eldeniral,Brylquin,Eldenvalir,Bryllith,Palthcarth,Kalmyr,Shaelmarn,Brylxar,Ardenxar,Kaliral,Erasloris,Eldenmarn,Orycarth,Kalquin,Erasmyr,Erascarth,Ardenmyr,Palthvalir,Brylvalir,Torloris,Shaelvalir,Torquin,Eldenloris,Shaelloris,Irynloris,Iryniral,Shaellith,Orymarn,Kalmarn,Oryiral,Irynquin,Oryxar,Torcarth,Kallith,Oryvalir,Eraslith,Ardenzyph,Kalxar,Brylcarth,Shaelzyph,Torvalir,Eldenlith,Orylith,Torzyph,Shaelmyr,Kalzyph,Ardenquin,Ardencarth,Oryloris,Ardenmarn,Eldenmyr,Kalcarth,Irynvalir,Shaeliral,Palthzyph,Erasvalir,Irynxar,Ardeniral,Toriral,Kalvalir,Torxar,Tormarn,Shaelxar,Ardenvalir,Shaelcarth,Palthmyr,Irynzyph,Erasmarn,Brylloris,Irynmarn,Iryncarth,Brylmyr,Brylmarn,Bryliral,Eraszyph
+
+n > m,z,v,i,l,x,c,q
+l > t,i,o,v,m,z,l,x,c,q
+T > o
+m > a,y
+t > h
+c > a
+A > r
+u > i
+x > a
+d > e
+a > l,r,v,e,s
+B > r
+r > v,n,a,i,t,m,z,l,x,c,q
+S > h
+P > a
+v > a
+E > l,r
+O > r
+I > r
+h > x,v,m,z,i,l,c,q
+e > n,l
+K > a
+z > y
+o > r,v
+q > u
+p > h
+i > r,s,t,n
+y > p,r,m,z,v,i,l,x,c,q,n
+s > m,z,v,i,l,x,c,q
