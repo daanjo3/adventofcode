@@ -18,6 +18,11 @@ func Quest(dayDirName string, partFuncs ...func(string)) {
 	flag.BoolVar(&sample, "sample", false, "Run with sample input")
 	flag.Parse()
 
+	if len(flag.Args()) > 0 {
+		fmt.Println("Unexpected extra arguments:", flag.Args())
+		os.Exit(1)
+	}
+
 	if part < 1 || part > len(partFuncs) {
 		fmt.Printf("-part must be between 1 and %d\n", len(partFuncs))
 		os.Exit(1)
@@ -44,7 +49,7 @@ var (
 	inputPathFormat           = "%s/input.txt"
 	inputPartPathFormat       = "%s/input-%d.txt"
 	sampleInputPathFormat     = "%s/input-sample.txt"
-	sampleInputPartPathFormat = "%s/input-sample-%d.txt"
+	sampleInputPartPathFormat = "%s/input-%d-sample.txt"
 )
 
 func getInputPath(dayDirName string, part int, sample bool) string {
