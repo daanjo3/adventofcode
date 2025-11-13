@@ -71,8 +71,8 @@ func CutMaxKnots(inputfile string) {
 		art.Add(Line{numbers[i], numbers[i+1]})
 	}
 	crossesMax := 0
-	for i := 1; i <= max; i++ {
-		for j := 1; j <= max; j++ {
+	for i := 1; i <= max/2; i++ {
+		for j := max / 2; j <= max; j++ {
 			line := Line{i, j}
 			crosses := art.CountCrosses(line)
 			if art.Contains(line) {
