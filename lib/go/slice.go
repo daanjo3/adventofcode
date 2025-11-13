@@ -40,7 +40,12 @@ func ArrSum(numbers []int) int {
 
 func ParseIntArray(line string) []int {
 	var intArr = []int{}
-	digits := strings.Fields(line)
+	var digits []string
+	if strings.Contains(line, ",") {
+		digits = strings.Split(line, ",")
+	} else {
+		digits = strings.Fields(line)
+	}
 	for _, digit := range digits {
 		intArr = append(intArr, Must(strconv.Atoi(digit)))
 	}
