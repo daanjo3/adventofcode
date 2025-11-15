@@ -32,6 +32,10 @@ func (p Point) Subtract(other Point) Point {
 	return Point{X: p.X - other.X, Y: p.Y - other.Y}
 }
 
+func (p Point) Equals(other Point) bool {
+	return p.X == other.X && p.Y == other.Y
+}
+
 func (p Point) String() string {
 	return fmt.Sprintf("Point(x: %v, y: %v)", p.X, p.Y)
 }
